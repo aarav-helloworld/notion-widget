@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streak</title>
+    <title>Year Countdown</title>
     <style>
         *{
             padding: 0;
@@ -63,7 +63,7 @@ var x = setInterval(function() {
   var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
   // Display the result in the element with id="demo"
-  document.getElementById("days").innerHTML = days + " Days ";
+  document.getElementById("days").innerHTML = days + " Days Remaining ";
 
   // If the count down is finished, write some text
   if (distance < 0) {
