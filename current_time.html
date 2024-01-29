@@ -1,49 +1,118 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <style>
-        *{
-            padding:0;
-            margin:0;
-            box-sizing:border-box;
-        }
-        .wrapper{
-          padding: 10px;
-          display: flex;
-          width: 100%;
-          height: 100px;
-          justify-content: center;
-          align-items: center;
-          background: #191919;
-        }
-        .wrapper span
-        {
-          color: #fff;
-          text-shadow: 1px 1px red;
-          padding: 10px;
-          border: 1px solid #fff;
-          box-shadow: 2px 3px #fff;
-        }
-    </style>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      font-size: 28px;
+    }
+
+    .wrapper {
+      padding: 10px;
+      display: flex;
+      width: 100%;
+      height: 100px;
+      justify-content: center;
+      align-items: center;
+      background: #191919;
+    }
+
+    .wrapper span {
+      color: #fff;
+    }
+
+  
+  .btn {
+  padding: 0.6em 2em;
+  border: none;
+  outline: none;
+  color: rgb(255, 255, 255);
+  background: #111;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.btn:before {
+  content: "";
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff7300,
+    #fffb00,
+    #48ff00,
+    #00ffd5,
+    #002bff,
+    #7a00ff,
+    #ff00c8,
+    #ff0000
+  );
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing-button-85 20s linear infinite;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 10px;
+}
+
+@keyframes glowing-button-85 {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.btn:after {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #222;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}
+  </style>
 </head>
+
 <body>
   <div class="wrapper">
-    <span id="time"></span>
+    <button class="btn" id="time" role="button"></button>
   </div>
-    <script>
-        function updateTime() {
-            var now = new Date();
-            var hours = now.getHours();
-            var minutes = now.getMinutes();
-            var ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12; // the hour '0' should be '12'
-            minutes = minutes < 10 ? '0'+minutes : minutes;
-            var strTime = hours + ':' + minutes + ' ' + ampm;
-            document.getElementById('time').textContent = strTime;
-        }
-        setInterval(updateTime, 1000);
-        updateTime();
-    </script>
+  <script>
+    function updateTime() {
+      var now = new Date();
+      var hours = now.getHours();
+      var minutes = now.getMinutes();
+      var ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      minutes = minutes < 10 ? '0' + minutes : minutes;
+      var strTime = hours + ':' + minutes + ' ' + ampm;
+      document.getElementById('time').textContent = strTime;
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+  </script>
 </body>
+
 </html>
