@@ -14,7 +14,7 @@
 <body>
     <div class="body">
         <div class="birthdayCard">
-            <div class="cardFront">
+            <div class="cardFront" onclick="playMusic()">
                 <h3 class="happy">HAPPY BIRTHDAY! YASHU</h3>
                 <div class="balloons">
                     <div class="balloonOne"></div>
@@ -32,6 +32,14 @@
             </div>
         </div>
     </div>
+        <audio id="audio" src="tune.mp3">
+    </audio>
+    <script>
+        function playMusic(){
+            document.getElementById("audio").play();
+        }
+    </script>
+
 </body>
 
 </html>
