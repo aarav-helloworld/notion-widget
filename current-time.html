@@ -23,7 +23,7 @@
             justify-content: center;
             min-height: 100%;
             box-sizing: border-box;
-            transition: background 0.3s, color 0.3s;
+            transition: background 0.3s ease, color 0.3s ease;
         }
         
         .time-container {
@@ -59,11 +59,13 @@
         
         .theme-toggle {
             position: absolute;
-            top: 4px;
+            bottom: 4px;
             right: 4px;
             font-size: 10px;
             opacity: 0.5;
             cursor: pointer;
+            transition: opacity 0.2s;
+            z-index: 10;
         }
         
         .theme-toggle:hover {
@@ -72,15 +74,15 @@
     </style>
 </head>
 <body>
-    <div class="theme-toggle" id="themeToggle">🌓</div>
     <div class="time-container">
         <div class="day" id="day">Wednesday</div>
         <div class="date" id="date">April 10, 2024</div>
         <div class="time" id="time">11:45<span class="ampm" id="ampm">PM</span></div>
     </div>
+    <div class="theme-toggle" id="themeToggle">🌓</div>
 
     <script>
-        // Theme settings
+        // Theme settings with your exact color (#C29343 for light mode)
         const themes = {
             dark: {
                 bg: '#191919',
@@ -88,56 +90,44 @@
             },
             light: {
                 bg: '#FFFFFF',
-                text: '#8B6E3A'
+                text: '#C29343' // Updated to match Notion's light mode exactly
             }
         };
         
         // Current theme state
         let currentTheme = 'dark';
+        let manualOverride = false;
         
-        // Apply theme
+        // Apply theme with smooth transition
         function applyTheme(theme) {
             currentTheme = theme;
             document.documentElement.style.setProperty('--bg-color', themes[theme].bg);
             document.documentElement.style.setProperty('--text-color', themes[theme].text);
         }
         
-        // Try multiple methods to detect Notion's theme
+        // Improved theme detection with better Notion support
         function detectNotionTheme() {
-            // Method 1: Check for Notion's theme class (works in newer versions)
+            if (manualOverride) return;
+            
+            // Method 1: Check for Notion's theme attribute (most reliable)
             try {
-                if (window.parent.document.querySelector('.notion-light-theme')) {
-                    applyTheme('light');
-                    return;
-                }
-                if (window.parent.document.querySelector('.notion-dark-theme')) {
-                    applyTheme('dark');
+                const notionApp = window.parent.document.querySelector('notion-app');
+                if (notionApp) {
+                    const theme = notionApp.getAttribute('theme') || 'dark';
+                    applyTheme(theme);
                     return;
                 }
             } catch (e) {}
             
             // Method 2: Check system preference
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-                applyTheme('light');
-                return;
-            }
-            
-            // Method 3: Check background color (last resort)
-            try {
-                const bgColor = window.getComputedStyle(document.body).backgroundColor;
-                const isLight = bgColor.includes('255, 255, 255') || 
-                                bgColor.includes('250, 250, 250') || 
-                                bgColor.includes('255, 255, 255');
-                applyTheme(isLight ? 'light' : 'dark');
-                return;
-            } catch (e) {}
-            
-            // Default to dark theme if all methods fail
-            applyTheme('dark');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(systemDark ? 'dark' : 'light');
         }
         
-        // Manual theme toggle
-        document.getElementById('themeToggle').addEventListener('click', () => {
+        // Manual theme toggle with instant response
+        document.getElementById('themeToggle').addEventListener('click', (e) => {
+            e.stopPropagation();
+            manualOverride = true;
             applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
         });
         
@@ -174,11 +164,18 @@
         
         // Watch for system theme changes
         if (window.matchMedia) {
-            window.matchMedia('(prefers-color-scheme: dark)').addListener(detectNotionTheme);
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(() => {
+                manualOverride = false;
+                detectNotionTheme();
+            });
         }
         
-        // Periodically check for theme changes (as fallback)
-        setInterval(detectNotionTheme, 5000);
+        // More frequent checks when in Notion
+        setInterval(() => {
+            if (!manualOverride) {
+                detectNotionTheme();
+            }
+        }, 1000);
     </script>
 </body>
 </html>
