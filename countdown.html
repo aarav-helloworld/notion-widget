@@ -3,49 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Countdown Widget</title>
+    <title>Notion Countdown Widget</title>
     <style>
-        .countdown-container {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        body {
+            margin: 0;
             padding: 12px;
             background: #191919;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            color: #C19138;
+            font-family: 'SF Mono', 'Roboto Mono', monospace;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100%;
+            box-sizing: border-box;
         }
+        
+        .countdown-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        
         .countdown-title {
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
             margin-bottom: 8px;
-            color: #37352f;
+            opacity: 0.8;
         }
+        
         .countdown-timer {
-            font-size: 24px;
-            font-weight: 700;
-            color: #2eaadc;
+            display: flex;
+            gap: 12px;
+            align-items: baseline;
         }
+        
+        .time-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .time-value {
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1;
+        }
+        
+        .time-label {
+            font-size: 10px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+        
         .expired {
+            font-size: 18px;
+            font-weight: 600;
             color: #eb5757;
         }
     </style>
 </head>
 <body>
     <div class="countdown-container">
-        <div class="countdown-title" id="title">Countdown</div>
-        <div class="countdown-timer" id="timer">00:00:00</div>
+        <div class="countdown-title" id="title">COUNTDOWN</div>
+        <div class="countdown-timer" id="timer">
+            <div class="time-unit">
+                <span class="time-value" id="days">00</span>
+                <span class="time-label">Days</span>
+            </div>
+            <div class="time-unit">
+                <span class="time-value" id="hours">00</span>
+                <span class="time-label">Hours</span>
+            </div>
+            <div class="time-unit">
+                <span class="time-value" id="minutes">00</span>
+                <span class="time-label">Minutes</span>
+            </div>
+        </div>
     </div>
 
     <script>
         // Get parameters from URL
         const urlParams = new URLSearchParams(window.location.search);
         const targetDate = urlParams.get('date');
-        const title = urlParams.get('title') || 'Countdown';
+        const title = urlParams.get('title') || 'COUNTDOWN';
         
         // Set the title
-        document.getElementById('title').textContent = title;
+        document.getElementById('title').textContent = title.toUpperCase();
 
         if (targetDate) {
-            // Update the countdown every second
+            // Update the countdown every minute (since we're not showing seconds)
             const countdown = setInterval(() => {
                 const now = new Date().getTime();
                 const target = new Date(targetDate).getTime();
@@ -55,21 +106,20 @@
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
                 
                 // Display the result
                 const timerElement = document.getElementById('timer');
                 if (distance < 0) {
                     clearInterval(countdown);
-                    timerElement.textContent = "EXPIRED";
-                    timerElement.classList.add('expired');
+                    timerElement.innerHTML = '<div class="expired">EXPIRED</div>';
                 } else {
-                    timerElement.textContent = 
-                        `${days}d ${hours}h ${minutes}m ${Math.floor(seconds)}s`;
+                    document.getElementById('days').textContent = days.toString().padStart(2, '0');
+                    document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+                    document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
                 }
-            }, 1000);
+            }, 1000); // Still update every second for accuracy, even though we don't show seconds
         } else {
-            document.getElementById('timer').textContent = "No date specified";
+            document.getElementById('timer').innerHTML = '<div style="font-size:12px;opacity:0.7;">No target date specified</div>';
         }
     </script>
 </body>
