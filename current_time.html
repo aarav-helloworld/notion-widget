@@ -98,21 +98,65 @@
   <div class="wrapper">
     <button class="btn" id="time" role="button"></button>
   </div>
-  <script>
-    function updateTime() {
-      var now = new Date();
-      var hours = now.getHours();
-      var minutes = now.getMinutes();
-      var ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12;
-      hours = hours ? hours : 12; // the hour '0' should be '12'
-      minutes = minutes < 10 ? '0' + minutes : minutes;
-      var strTime = hours + ':' + minutes + ' ' + ampm;
-      document.getElementById('time').textContent = strTime;
+<script>
+    function updateDateTime() {
+        var now = new Date();
+        
+        // Time components
+        var hours = now.getHours();
+        var minutes = now.getMinutes();
+        var seconds = now.getSeconds();
+        var ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        
+        // Date components
+        var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        var dayName = days[now.getDay()];
+        var monthName = months[now.getMonth()];
+        var date = now.getDate();
+        var year = now.getFullYear();
+        
+        // Format date as "Day, Month Date, Year"
+        var strDate = dayName + ', ' + monthName + ' ' + date + ', ' + year;
+        
+        // Format time as "HH:MM:SS AM/PM"
+        var strTime = hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+        
+        // Combine both (you can modify this layout)
+        document.getElementById('datetime').innerHTML = 
+            '<div class="date">' + strDate + '</div>' +
+            '<div class="time">' + strTime + '</div>';
     }
-    setInterval(updateTime, 1000);
-    updateTime();
-  </script>
+    
+    // Update immediately and then every second
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+</script>
+
+<style>
+    .date {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+    .time {
+        font-size: 24px;
+        font-family: monospace;
+    }
+    #datetime {
+        font-family: Arial, sans-serif;
+        padding: 10px;
+        background: #f5f5f5;
+        border-radius: 5px;
+        display: inline-block;
+    }
+</style>
+
+<div id="datetime"></div>
 </body>
 
 </html>
