@@ -71,18 +71,7 @@
     <div class="countdown-container">
         <div class="countdown-title" id="title">COUNTDOWN</div>
         <div class="countdown-timer" id="timer">
-            <div class="time-unit">
-                <span class="time-value" id="days">00</span>
-                <span class="time-label">Days</span>
-            </div>
-            <div class="time-unit">
-                <span class="time-value" id="hours">00</span>
-                <span class="time-label">Hours</span>
-            </div>
-            <div class="time-unit">
-                <span class="time-value" id="minutes">00</span>
-                <span class="time-label">Minutes</span>
-            </div>
+            <!-- Dynamic content will be inserted here -->
         </div>
     </div>
 
@@ -95,29 +84,52 @@
         // Set the title
         document.getElementById('title').textContent = title.toUpperCase();
 
+        function formatTimeUnit(value, label) {
+            return `
+                <div class="time-unit">
+                    <span class="time-value">${value.toString().padStart(2, '0')}</span>
+                    <span class="time-label">${label}</span>
+                </div>
+            `;
+        }
+
         if (targetDate) {
-            // Update the countdown every minute (since we're not showing seconds)
+            // Update the countdown every minute
             const countdown = setInterval(() => {
-                const now = new Date().getTime();
-                const target = new Date(targetDate).getTime();
+                const now = new Date();
+                const target = new Date(targetDate);
                 const distance = target - now;
                 
-                // Time calculations
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                if (distance < 0) {
+                    clearInterval(countdown);
+                    document.getElementById('timer').innerHTML = '<div class="expired">EXPIRED</div>';
+                    return;
+                }
+                
+                // Calculate all time units
+                const totalDays = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 
-                // Display the result
-                const timerElement = document.getElementById('timer');
-                if (distance < 0) {
-                    clearInterval(countdown);
-                    timerElement.innerHTML = '<div class="expired">EXPIRED</div>';
+                // Determine whether to show months+days or just days
+                let timeHTML = '';
+                
+                if (totalDays > 30) {
+                    const months = Math.floor(totalDays / 30);
+                    const remainingDays = totalDays % 30;
+                    
+                    timeHTML += formatTimeUnit(months, 'Months');
+                    timeHTML += formatTimeUnit(remainingDays, 'Days');
                 } else {
-                    document.getElementById('days').textContent = days.toString().padStart(2, '0');
-                    document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-                    document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                    timeHTML += formatTimeUnit(totalDays, 'Days');
                 }
-            }, 1000); // Still update every second for accuracy, even though we don't show seconds
+                
+                timeHTML += formatTimeUnit(hours, 'Hours');
+                timeHTML += formatTimeUnit(minutes, 'Minutes');
+                
+                document.getElementById('timer').innerHTML = timeHTML;
+                
+            }, 60000); // Update every minute (since we're not showing seconds)
         } else {
             document.getElementById('timer').innerHTML = '<div style="font-size:12px;opacity:0.7;">No target date specified</div>';
         }
