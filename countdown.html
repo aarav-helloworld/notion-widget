@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Widget</title>
+    <style>
+        .countdown-container {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 12px;
+            background: #fff;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .countdown-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #37352f;
+        }
+        .countdown-timer {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2eaadc;
+        }
+        .expired {
+            color: #eb5757;
+        }
+    </style>
+</head>
+<body>
+    <div class="countdown-container">
+        <div class="countdown-title" id="title">Countdown</div>
+        <div class="countdown-timer" id="timer">00:00:00</div>
+    </div>
+
+    <script>
+        // Get parameters from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetDate = urlParams.get('date');
+        const title = urlParams.get('title') || 'Countdown';
+        
+        // Set the title
+        document.getElementById('title').textContent = title;
+
+        if (targetDate) {
+            // Update the countdown every second
+            const countdown = setInterval(() => {
+                const now = new Date().getTime();
+                const target = new Date(targetDate).getTime();
+                const distance = target - now;
+                
+                // Time calculations
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                // Display the result
+                const timerElement = document.getElementById('timer');
+                if (distance < 0) {
+                    clearInterval(countdown);
+                    timerElement.textContent = "EXPIRED";
+                    timerElement.classList.add('expired');
+                } else {
+                    timerElement.textContent = 
+                        `${days}d ${hours}h ${minutes}m ${Math.floor(seconds)}s`;
+                }
+            }, 1000);
+        } else {
+            document.getElementById('timer').textContent = "No date specified";
+        }
+    </script>
+</body>
+</html>
