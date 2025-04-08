@@ -5,11 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notion Time Widget</title>
     <style>
+        :root {
+            --bg-color: #191919;
+            --text-color: #C19138;
+        }
+        
         body {
             margin: 0;
             padding: 12px;
-            background: #191919;
-            color: #C19138;
+            background: var(--bg-color);
+            color: var(--text-color);
             font-family: 'SF Mono', 'Roboto Mono', monospace;
             text-align: center;
             display: flex;
@@ -60,6 +65,31 @@
     </div>
 
     <script>
+        // Theme detection
+        function detectNotionTheme() {
+            // Check if widget is in Notion
+            if (window.parent !== window) {
+                try {
+                    // Detect background color from parent (Notion)
+                    const parentBg = window.getComputedStyle(window.parent.document.body).backgroundColor;
+                    
+                    // If light mode (RGB close to white)
+                    if (parentBg.includes('255, 255, 255') || parentBg.includes('250, 250, 250')) {
+                        document.documentElement.style.setProperty('--bg-color', '#FFFFFF');
+                        document.documentElement.style.setProperty('--text-color', '#8B6E3A'); // Slightly darker gold for light mode
+                    } else {
+                        // Default dark mode
+                        document.documentElement.style.setProperty('--bg-color', '#191919');
+                        document.documentElement.style.setProperty('--text-color', '#C19138');
+                    }
+                } catch (e) {
+                    // Fallback to dark mode if can't access parent
+                    console.log("Not in Notion, using default theme");
+                }
+            }
+        }
+
+        // Time update function
         function updateTime() {
             const now = new Date();
             
@@ -68,7 +98,8 @@
             document.getElementById('day').textContent = days[now.getDay()];
             
             // Date
-            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
+                          'August', 'September', 'October', 'November', 'December'];
             document.getElementById('date').textContent = 
                 `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
             
@@ -76,18 +107,24 @@
             let hours = now.getHours();
             const ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
-            hours = hours ? hours : 12; // Convert 0 to 12
+            hours = hours ? hours : 12;
             const minutes = now.getMinutes().toString().padStart(2, '0');
             
             document.getElementById('time').innerHTML = 
                 `${hours}:${minutes}<span class="ampm">${ampm}</span>`;
             
-            // Update again in 1 second
             setTimeout(updateTime, 1000);
         }
 
-        // Initial update
+        // Initial setup
+        detectNotionTheme();
         updateTime();
+        
+        // Optional: Add theme change observer (works in some Notion versions)
+        if (window.matchMedia) {
+            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            darkModeMediaQuery.addListener(detectNotionTheme);
+        }
     </script>
 </body>
 </html>
