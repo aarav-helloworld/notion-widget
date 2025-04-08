@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notion Time Widget</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 12px;
+            background: #191919;
+            color: #C19138;
+            font-family: 'SF Mono', 'Roboto Mono', monospace;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100%;
+            box-sizing: border-box;
+        }
+        
+        .time-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+        
+        .day {
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        
+        .date {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+        
+        .time {
+            font-size: 16px;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+        
+        .ampm {
+            font-size: 12px;
+            vertical-align: super;
+            margin-left: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="time-container">
+        <div class="day" id="day">Wednesday</div>
+        <div class="date" id="date">April 10, 2024</div>
+        <div class="time" id="time">11:45<span class="ampm" id="ampm">PM</span></div>
+    </div>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            
+            // Day name
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            document.getElementById('day').textContent = days[now.getDay()];
+            
+            // Date
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('date').textContent = 
+                `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+            
+            // Time
+            let hours = now.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // Convert 0 to 12
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            
+            document.getElementById('time').innerHTML = 
+                `${hours}:${minutes}<span class="ampm">${ampm}</span>`;
+            
+            // Update again in 1 second
+            setTimeout(updateTime, 1000);
+        }
+
+        // Initial update
+        updateTime();
+    </script>
+</body>
+</html>
